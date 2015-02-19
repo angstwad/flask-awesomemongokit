@@ -9,3 +9,5 @@ sys.path.insert(0, '..')
 
 app = flask.Flask(__name__)
 app.config.from_object(config)
+
+# These tests are crap
