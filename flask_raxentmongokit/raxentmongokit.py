@@ -42,6 +42,9 @@ class RaxEntMongokit(Singleton):
     def __init__(self, flask_app):
         self._connection = None
         self.app = flask_app
+        if not hasattr(flask_app, 'extensions'):
+            flask_app.extensions = {}
+        flask_app.extensions['raxentmongokit'] = self
 
     @property
     def connection(self):

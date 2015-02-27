@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='flask-raxentmongokit',
-    version='0.1',
+    version='0.2',
     packages=['flask_raxentmongokit'],
     url='https://github.rackspace.com/EnterpriseSupport/raxent-mongokit',
     license='None',
