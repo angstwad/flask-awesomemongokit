@@ -11,7 +11,7 @@ setup(
     author='Rackspace Enterprise DevOps',
     author_email='',
     description='Helpers to make MongoKit "opinionated" in our environments',
-    requires=[
+    install_requires=[
         'mongokit',
         'pymongo',
         'flask'
