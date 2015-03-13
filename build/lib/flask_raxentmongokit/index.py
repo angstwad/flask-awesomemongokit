@@ -2,12 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import pymongo
-from pymongo.errors import DuplicateKeyError
 
 from raxentmongokit import RaxEntMongokit
 
 
-def index_helper(flask_app, mongokit_doc):
+def index_helper(mongokit_doc):
     """ Given a MongoKit document, using the "old" syntax for specifying
     collection indexes, create an index on a MongoDB collection.
 
@@ -18,22 +17,10 @@ def index_helper(flask_app, mongokit_doc):
     results = []
     for index_group in mongokit_doc.indexes:
         indexes = [(key, pymongo.ASCENDING) for key in index_group['fields']]
-        mongo = RaxEntMongokit(flask_app)
+        mongo = RaxEntMongokit()
         db = getattr(mongo.connection, mongokit_doc.__database__)
         coll = mongokit_doc.__collection__
         unique = index_group.get('unique', False)
-        try:
-            result = db[coll].ensure_index(indexes, unique=unique)
-        except DuplicateKeyError as e:
-            result = e
+        result = db[coll].ensure_index(indexes, unique=unique)
         results.append((indexes, result))
     return results
-
-
-def index_all_docs(flask_app):
-    mongo = flask_app.extensions['raxentmongokit']
-    rdct = {}
-    for doc in mongo.connection._registered_documents.values():
-        result = index_helper(flask_app, doc)
-        rdct[doc] = result
-    return rdct
