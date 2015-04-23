@@ -13,7 +13,7 @@ setup(
     description='Helpers to make MongoKit "opinionated" in our environments',
     install_requires=[
         'mongokit',
-        'pymongo',
+        'pymongo<3.0',
         'flask'
     ]
 )

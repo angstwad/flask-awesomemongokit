@@ -57,13 +57,14 @@ class RaxEntMongokit(Singleton):
             return self._connection
 
         uri = self.app.config.get('MONGODB_URI')
+        kwargs = self.app.config.get('MONGO_KWARGS')
         parsed = pymongo.uri_parser.parse_uri(uri)
         if len(parsed.get('nodelist', [])) > 1:
             cls = ReplicaSetConnection
         else:
             cls = Connection
 
-        self._connection = cls(uri)
+        self._connection = cls(uri, **kwargs)
         self._connection.register(self._handle_registrations())
 
         return self._connection
