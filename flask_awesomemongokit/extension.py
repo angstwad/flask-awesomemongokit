@@ -27,11 +27,11 @@ class Singleton(object):
         return cls._instance
 
 
-class RaxEntMongoKitError(Exception):
+class AwesomeMongoKitError(Exception):
     pass
 
 
-class RaxEntMongokit(Singleton):
+class AwesomeMongoKit(Singleton):
     """ A Mongo connection class that automagically returns a MongoKit
     ReplicaSetConnection or Connection instance as appropriate.  Inherits from
     Singleton to prevent instantiation of multiple instances, thus preventing
@@ -48,7 +48,7 @@ class RaxEntMongokit(Singleton):
 
     @property
     def connection(self):
-        """ The dangling participle (some might call it an instance attribute)
+        """ This dangling participle (some might call it an instance attribute)
         on which to grab MongoKit Document objects that have, or should have,
         been registered.  Dynamically returns the appropriate instance of a
         ReplicaSet or standard MongoDB connection instance.
@@ -57,18 +57,23 @@ class RaxEntMongokit(Singleton):
             return self._connection
 
         uri = self.app.config.get('MONGODB_URI')
+        kwargs = self.app.config.get('MONGO_KWARGS', {})
+
+        if not uri:
+            raise AwesomeMongoKitError('Missing MONGODB_URI in app config')
+
         parsed = pymongo.uri_parser.parse_uri(uri)
         if len(parsed.get('nodelist', [])) > 1:
             cls = ReplicaSetConnection
         else:
             cls = Connection
 
-        self._connection = cls(uri)
+        self._connection = cls(uri, **kwargs)
         self._connection.register(self._handle_registrations())
 
         return self._connection
 
-    def _handle_registrations(self):
+    def _handle_registrations(self, ignore_missing_docs=True):
         """ This method looks to a Flask app's config object, and fetches
         MONGOKIT_DOCUMENTS attribute.  It parses this list of strings, and
         imports the classes using the dot-notated package.module.Class names,
@@ -80,29 +85,27 @@ class RaxEntMongokit(Singleton):
         try:
             MONGOKIT_DOCUMENTS = self.app.config['MONGOKIT_DOCUMENTS']
         except KeyError:
-            raise RaxEntMongoKitError(
-                'Flask app config has no key "MONGOKIT_DOCUMENTS"'
-            )
+            return documents
 
         for docname in MONGOKIT_DOCUMENTS:
             try:
                 mod_name = ".".join(str(docname).split('.')[:-1])
             except IndexError:
-                raise RaxEntMongoKitError(
+                raise AwesomeMongoKitError(
                     'Unable to parse MongoKit document class from %s' % docname
                 )
 
             try:
                 module = importlib.import_module(mod_name)
             except ImportError:
-                raise RaxEntMongoKitError(
+                raise AwesomeMongoKitError(
                     'Unable to import MongoKit module from %s' % mod_name
                 )
 
             try:
                 cls_name = str(docname).split('.')[-1]
             except IndexError:
-                raise RaxEntMongoKitError(
+                raise AwesomeMongoKitError(
                     'Unable to parse MongoKit document class name from '
                     '%s' % docname
                 )
@@ -110,7 +113,7 @@ class RaxEntMongokit(Singleton):
             try:
                 doc_cls = getattr(module, cls_name)
             except AttributeError as e:
-                raise RaxEntMongoKitError(e.message)
+                raise AwesomeMongoKitError(e.message)
 
             documents.append(doc_cls)
         return documents

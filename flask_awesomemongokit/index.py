@@ -4,7 +4,7 @@
 import pymongo
 from pymongo.errors import DuplicateKeyError
 
-from raxentmongokit import RaxEntMongokit
+from .extension import AwesomeMongoKit
 
 
 def index_helper(flask_app, mongokit_doc):
@@ -18,7 +18,7 @@ def index_helper(flask_app, mongokit_doc):
     results = []
     for index_group in mongokit_doc.indexes:
         indexes = [(key, pymongo.ASCENDING) for key in index_group['fields']]
-        mongo = RaxEntMongokit(flask_app)
+        mongo = AwesomeMongoKit(flask_app)
         db = getattr(mongo.connection, mongokit_doc.__database__)
         coll = mongokit_doc.__collection__
         unique = index_group.get('unique', False)
