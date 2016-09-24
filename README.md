@@ -3,9 +3,9 @@ flask-awesomemongokit
 
 An opinionated configuration for Mongo and MongoKit in Flask (singleton connections, doc registrations, indexing, and little else!)
 
-# How does it do a thing?
+# How does it work?
 
-In the Flask config, make a thing:
+In the Flask config, declare document models:
 
 ```
 MONGOKIT_DOCUMENTS = [
@@ -40,7 +40,7 @@ attribute to access the DB connection
 mongo.connection.DocumentClass.find({'query': 'something'})
 ```
 
-Oh, and we has index helpers cuz indexing in MongoKit sucks:
+Oh, and we index helpers because indexing in MongoKit (admittedly) sucks:
 ```
 from flask.ext.awesomemongokit import index_all_docs
 from myapp import flask_app
