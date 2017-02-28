@@ -1,6 +1,8 @@
 flask-awesomemongokit
 ====================
 
+**Warning: MongoKit is effectively dead.  Think twice about using this or MongoKit.**
+
 An opinionated configuration for Mongo and MongoKit in Flask (singleton connections, doc registrations, indexing, and little else!)
 
 # How does it work?
